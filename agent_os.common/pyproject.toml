@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-os-common"
+version = "1.0.0"
+description = "Common models, events and utilities for Agent OS"
+authors = [{name = "Agent OS Team"}]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+namespaces = true
+include = ["agent_os*"]
+
+[tool.setuptools.package-data]
+"agent_os.common" = ["py.typed"]
