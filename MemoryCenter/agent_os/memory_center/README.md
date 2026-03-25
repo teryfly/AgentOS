@@ -56,6 +56,9 @@ MEMORY_SEMANTIC_ENABLED=false
 
 ### 2. Database Migration
 
+INSTALL PGroonga , a PostgreSQL extension as a high-performance, full-text search engine. see:
+https://pgroonga.github.io/install/windows.html
+
 Run the SQL migration script:
 
 ```bash
