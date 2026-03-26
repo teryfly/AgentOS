@@ -1,0 +1,27 @@
+protocol: subprocess
+
+tools:
+  - name: shell_run
+    description: "Execute shell command in restricted sandbox environment. High-risk tool - restricted to coder and programmer roles."
+    category: system
+    allowed_roles: ["coder", "programmer"]
+    parameters:
+      command:
+        type: string
+        required: true
+        description: "Shell command to execute"
+      timeout:
+        type: int
+        required: false
+        default: 30
+        description: "Timeout in seconds"
+      cwd:
+        type: string
+        required: false
+        description: "Working directory for command execution"
+    subprocess:
+      shell: true
+      capture_output: true
+      timeout_field: "timeout"
+      cwd_field: "cwd"
+      command_field: "command"

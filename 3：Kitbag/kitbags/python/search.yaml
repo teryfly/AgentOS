@@ -1,0 +1,22 @@
+protocol: python
+
+tools:
+  - name: search
+    description: "Search knowledge base using keywords. Returns relevant documents and snippets."
+    category: data
+    allowed_roles: []
+    parameters:
+      query:
+        type: string
+        required: true
+        description: "Search keywords or phrase"
+      top_k:
+        type: int
+        required: false
+        default: 5
+        description: "Number of results to return"
+    python:
+      module: "tools.search_impl"
+      class: null
+      method: "search"
+      call_mode: direct

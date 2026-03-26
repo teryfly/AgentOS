@@ -1,0 +1,89 @@
+suite: "codeAiExecutorLib"
+protocol: python
+
+python_defaults:
+  module: "codeAiExecutorLib"
+  class: "CodeExecutor"
+  constructor_args: {}
+
+tools:
+  - name: code_execute
+    description: "Execute structured task DSL with support for file operations and shell commands. Supports dry_run mode for validation. DSL format: multiple Step blocks separated by ------, each with Action, File Path fields and code blocks."
+    category: code
+    allowed_roles: []
+    parameters:
+      root_dir:
+        type: string
+        required: true
+        description: "Task root directory (project ai_work_dir), all relative paths validated against this"
+      content:
+        type: string
+        required: true
+        description: "Task DSL text containing one or more Step blocks"
+      dry_run:
+        type: bool
+        required: false
+        default: false
+        description: "true=validate syntax and path safety only, do not write to disk; false=execute normally"
+    python:
+      method: "execute"
+      call_mode: generator
+      result_mapping:
+        strategy: collect_until_type
+        terminal_type: "summary"
+        output_field: "data"
+
+  - name: code_read_file
+    description: "Read project file content with path safety validation (must be within root_dir)"
+    category: data
+    allowed_roles: []
+    parameters:
+      root_dir:
+        type: string
+        required: true
+        description: "Project root directory"
+      file_path:
+        type: string
+        required: true
+        description: "File path relative to root_dir"
+    python:
+      method: "read_file"
+      call_mode: direct
+
+  - name: code_list_dir
+    description: "List directory contents, returns list of files with name, type, size"
+    category: data
+    allowed_roles: []
+    parameters:
+      root_dir:
+        type: string
+        required: true
+        description: "Project root directory"
+      dir_path:
+        type: string
+        required: false
+        default: "."
+        description: "Directory path relative to root_dir, defaults to root"
+    python:
+      method: "list_dir"
+      call_mode: direct
+
+  - name: code_rollback_file
+    description: "Rollback specified file to most recent backup version (backup created automatically by destructive operations)"
+    category: system
+    allowed_roles: []
+    parameters:
+      root_dir:
+        type: string
+        required: true
+        description: "Project root directory"
+      file_path:
+        type: string
+        required: true
+        description: "File path relative to root_dir"
+    python:
+      method: "rollback_file"
+      call_mode: direct
+      result_mapping:
+        strategy: attr_to_dict
+        fields: ["success", "message", "error", "backup_path"]

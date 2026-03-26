@@ -1,0 +1,22 @@
+protocol: python
+
+tools:
+  - name: python_exec
+    description: "Execute Python code snippet in isolated sandbox environment. High-risk tool - restricted to general role."
+    category: system
+    allowed_roles: ["general"]
+    parameters:
+      code:
+        type: string
+        required: true
+        description: "Python code to execute"
+      timeout:
+        type: int
+        required: false
+        default: 30
+        description: "Execution timeout in seconds"
+    python:
+      module: "tools.python_executor"
+      class: "PythonSandbox"
+      method: "execute"
+      call_mode: direct

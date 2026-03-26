@@ -1,0 +1,18 @@
+protocol: python
+
+tools:
+  - name: parse_coding_task_document
+    description: "Parse Coding Task Document text output by architect or engineer, extract estimated file count (estimate_n) and sub-phase structure (sub_phases). Returns estimate_n=0 on parse failure instead of throwing exception. Returned data field is ParseResult dataclass converted to dict, containing estimate_n, sub_phases, raw_document, source_type, parse_warnings fields."
+    category: data
+    allowed_roles: []
+    parameters:
+      text:
+        type: string
+        required: true
+        description: "Coding Task Document raw text (extracted from GroupActor FINAL content's final_output)"
+    python:
+      module: "coding_task_document_parser"
+      class: "CodingTaskDocumentParser"
+      constructor_args: {}
+      method: "parse"
+      call_mode: direct

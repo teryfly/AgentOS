@@ -1,0 +1,157 @@
+suite: "chat_backend_api"
+protocol: http
+
+http_defaults:
+  base_url: "http://${CHAT_BACKEND_HOST}:${CHAT_BACKEND_PORT}"
+  timeout_ms: 30000
+  headers:
+    Content-Type: "application/json"
+  auth:
+    type: bearer
+    token_env: "CHAT_BACKEND_TOKEN"
+
+tools:
+  - name: chat_send_message
+    description: "Send message to conversation and get LLM reply"
+    category: ai
+    allowed_roles: []
+    parameters:
+      conversation_id:
+        type: string
+        required: true
+        description: "Conversation UUID"
+      role:
+        type: string
+        required: true
+        enum: ["user", "assistant", "system"]
+        description: "Message role"
+      content:
+        type: string
+        required: true
+        description: "Message content"
+      model:
+        type: string
+        required: false
+        default: "claude-sonnet-4-6"
+        description: "LLM model name"
+      stream:
+        type: bool
+        required: false
+        default: false
+        description: "Enable streaming response"
+    http:
+      method: POST
+      path: "/v1/chat/conversations/{conversation_id}/messages"
+      path_params: ["conversation_id"]
+      body_mapping: exclude_path_params
+      auth_required: true
+
+  - name: chat_get_messages
+    description: "Get complete message history of conversation, sorted by time ascending"
+    category: data
+    allowed_roles: []
+    parameters:
+      conversation_id:
+        type: string
+        required: true
+        description: "Conversation UUID"
+    http:
+      method: GET
+      path: "/v1/chat/conversations/{conversation_id}/messages"
+      path_params: ["conversation_id"]
+      auth_required: false
+
+  - name: plan_get_latest_documents
+    description: "Query latest version of each file in document library, supports keyword search and pagination"
+    category: data
+    allowed_roles: []
+    parameters:
+      project_id:
+        type: int
+        required: true
+        description: "Project ID"
+      category_id:
+        type: int
+        required: false
+        description: "Document category ID"
+      query:
+        type: string
+        required: false
+        description: "Filename fuzzy search"
+      page:
+        type: int
+        required: false
+        default: 1
+        description: "Page number"
+      page_size:
+        type: int
+        required: false
+        default: 20
+        description: "Page size"
+    http:
+      method: GET
+      path: "/v1/plan/documents/latest"
+      query_mapping: all_params
+      auth_required: false
+
+  - name: plan_save_document
+    description: "Save document content to knowledge base (adds new version), used to persist architecture design documents, coding task sub-phase documents and other important outputs"
+    category: data
+    allowed_roles: []
+    parameters:
+      project_id:
+        type: int
+        required: true
+        description: "Project ID"
+      category_id:
+        type: int
+        required: true
+        description: "Document category ID (knowledge base uses category_id=5)"
+      filename:
+        type: string
+        required: true
+        description: "Logical filename, unique identifier within category"
+      content:
+        type: string
+        required: true
+        description: "Document content (Markdown or plain text)"
+      source:
+        type: string
+        required: false
+        default: "server"
+        description: "Source identifier: user / server / chat"
+    http:
+      method: POST
+      path: "/v1/plan/documents"
+      body_mapping: all_params
+      auth_required: true
+
+  - name: project_get_info
+    description: "Get project details including ai_work_dir (code write root directory), dev_environment, llm_model and other key fields"
+    category: data
+    allowed_roles: []
+    parameters:
+      id:
+        type: int
+        required: true
+        description: "Project ID"
+    http:
+      method: GET
+      path: "/v1/projects/{id}"
+      path_params: ["id"]
+      auth_required: false
+
+  - name: project_get_hierarchy
+    description: "Get complete project hierarchy in one call: project info, project-level referenced documents, all conversations and their conversation-level referenced documents"
+    category: data
+    allowed_roles: []
+    parameters:
+      project_id:
+        type: int
+        required: true
+        description: "Project ID"
+    http:
+      method: GET
+      path: "/v1/projects/{project_id}/hierarchy"
+      path_params: ["project_id"]
+      auth_required: false
