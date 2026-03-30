@@ -85,3 +85,16 @@ from agent_os.common import *
 ```python
 from agent_os.common import Task, TaskCreated, InMemoryEventBus
 ```
+
+
+# v1.1.0 更新后 安装与导入
+
+    pip install . 成功，python -c "import agent_os.common" 无报错。
+
+    以下导入命令全部成功：
+
+    python -c "from agent_os.common import (
+        GroupState, TaskWaitingInput, StepProgress, ConversationAssigned,
+        LlmActor, GroupActor, DeterministicActor, ModelPoolEntry, ActorMeta,
+        ContextBuildError
+    )"
